@@ -10,6 +10,11 @@
 #include "traitement_image.cpp"
 
 
+
+
+// clang++ -std=c++17 TP5.cpp -o TP5 && ./TP5∏"
+
+
 // paramètres de la droite dans l'espace de Hough
 struct ParamHough {
     double rho;
@@ -169,28 +174,16 @@ void extraire_points_hors_fond(const Image& img,
     }
 }
 
-ParamHough HoughDepuis2Points(int x1, int y1, int x2, int y2) {
-    ParamHough d;
+ParamHough HoughDepuis2Point(int x1, int y1, int x2, int y2) {
+    ParamHough parametres;
 
-    if (x1 == x2) {          // droite verticale : x = c
-        d.theta = 0.0;
-        d.rho = x1;
-        return d;
-    }
+    double dx = x1 - x2;
+    double dy = y1 - y2;
 
-    if (y1 == y2) {          // droite horizontale : y = c
-        d.theta = M_PI / 2.0;
-        d.rho = y1;
-        return d;
-    }
+    parametres.theta = std::atan2(dx,-dy); 
+    parametres.rho = x1 * std::cos(parametres.theta) + y1 * std::sin(parametres.theta);
 
-    double a = static_cast<double>(y2 - y1) / (x2 - x1);
-    double b = y1 - a * x1;
-
-    d.theta = std::atan(-1.0 / a);
-    d.rho = b * std::sin(d.theta);
-
-    return d;
+    return parametres;
 }
 
 int main() {
@@ -222,7 +215,7 @@ int main() {
     int x1 = 0, y1 = 10;
     int x2 = 30, y2 = 0;
 
-    ParamHough res = HoughDepuis2Points(x1, y1, x2, y2);
+    ParamHough res = HoughDepuis2Point(x1, y1, x2, y2);
 
     std::cout << "\nTest HoughDepuis2Points :" << std::endl;
     std::cout << "rho = " << res.rho << std::endl;
