@@ -1,4 +1,6 @@
 # Projet-802
 
-Ce projet est contenu dans plusieurs fichiers séparés. 
-Hough.cpp
+Ce projet est contenu dans plusieurs fichiers séparés.  
+Hough.cpp : 
+- structure Pixel
+- structure Image => 
