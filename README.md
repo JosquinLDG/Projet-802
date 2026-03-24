@@ -6,9 +6,10 @@ Ce projet est contenu dans plusieurs fichiers séparés.
 ► structure Pixel  
 ► structure Image :  
 - lire_token : méthode permettant de lire le premier token (~ mot) d'un texte en ignorant les lignes qui commencent par #. Le token renvoyé par la fonction est supprimé du texte lu. Appeler n fois la fonction avec le même texte permet de lire les n premiers token du texte (excepté les lignes en #).  
-- lire_ppm : une fonction pour lire les fichiers .ppm et les convertir en objet Image. Utilise la méthode lire_token pour traiter les .ppm .  
+- lire_ppm : une méthode pour lire les fichiers .ppm et les convertir en objet Image. Utilise la méthode lire_token pour traiter les .ppm .  
 - tracer_droite : crée et renvoie un objet Image avec une droite tracée selon des coordonnées polaires
 - surligner_droite : crée un nouveau fichier .ppm à partir d'un autre fichier déjà existant et change les valeurs des pixels concernées selon la fonction tracer_droite
-- afficher_données : fonction utile lors du développement pour visualiser un objet Image  
+- afficher_données : méthode utile lors du développement pour visualiser un objet Image
+- get_coordinates : renvoie les coordonnées X et Y des points d'un objet Image d'une certaine couleur (par défaut rouge).  
 
 ♥ 
