@@ -6,8 +6,11 @@
 #include <ctime>
 #include <utility>
 #include <string>
-#include "indice(max:min).cpp"
+
 #include "traitement_image.cpp"
+#include "fonctions_auxiliaires.cpp"
+
+
 
 
 
@@ -73,26 +76,20 @@ std::vector<ParamHough> clustering_simple(const std::vector<double>& rho_candida
 // Trouve plusieurs droites dans l'espace de Hough
 std::vector<ParamHough> trouve_droites(const std::vector<double>& X,
                                        const std::vector<double>& Y,
-                                       int nblignes = 2)
+                                       int nblignes = 1)
 {
     std::vector<ParamHough> resultats;
 
     int n = X.size();
-    if (n == 0 || Y.size() != X.size()) {
+    if (n == 0 || Y.size() != X.size()) {  // Les deux bars sont des ou 
         return resultats;
     }
 
-    int nb = 10 * n;
-    if (nb < 2) nb = 2;
+    int m = std::min(100,n*10);
 
-    std::vector<double> thetas(nb);
+    std::vector<double> thetas;
 
-    double theta_min = -M_PI / 2.0;
-    double theta_max =  M_PI / 2.0;
-
-    for (int i = 0; i < nb; i++) {
-        thetas[i] = theta_min + i * (theta_max - theta_min) / (nb - 1);
-    }
+    thetas = linspace((double)-M_PI / 2.0, (double)M_PI / 2.0, m);
 
     double rhomax = 0.0;
     for (int i = 0; i < n; i++) {
@@ -102,23 +99,23 @@ std::vector<ParamHough> trouve_droites(const std::vector<double>& X,
         }
     }
 
-    std::vector<double> rhos(nb);
-    for (int i = 0; i < nb; i++) {
-        rhos[i] = -rhomax + i * (2.0 * rhomax) / (nb - 1);
+    std::vector<double> rhos(m);
+    for (int i = 0; i < m; i++) {
+        rhos[i] = -rhomax + i * (2.0 * rhomax) / (m - 1);
     }
 
-    std::vector<int> accumulateur(nb * nb, 0);
+    std::vector<int> accumulateur(m * m, 0);
 
     for (int i = 0; i < n; i++) {
         double x = X[i];
         double y = Y[i];
 
-        for (int argtheta = 0; argtheta < nb; argtheta++) {
+        for (int argtheta = 0; argtheta < m; argtheta++) {
             double rho = x * std::cos(thetas[argtheta])
                        + y * std::sin(thetas[argtheta]);
 
             int argrho = arg_closest(rhos, rho);
-            accumulateur[nb * argrho + argtheta] += 1;
+            accumulateur[m * argrho + argtheta] += 1;
         }
     }
 
@@ -139,8 +136,8 @@ std::vector<ParamHough> trouve_droites(const std::vector<double>& X,
     for (int i = 0; i < (int)argcandidats.size(); i++) {
         int idx = argcandidats[i];
 
-        int argrho = idx / nb;
-        int argtheta = idx % nb;
+        int argrho = idx / m;
+        int argtheta = idx % m;
 
         rho_candidats.push_back(rhos[argrho]);
         theta_candidats.push_back(thetas[argtheta]);
