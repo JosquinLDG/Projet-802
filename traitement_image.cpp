@@ -4,7 +4,7 @@
 #include <sstream>
 #include <cmath>
 #include <utility>
-#include "linspace.cpp"
+#include <cstdlib>
 
 // Structure Pixel, qui permet de stocker les valeurs r, g et b d'un pixel
 struct Pixel {
@@ -20,6 +20,11 @@ struct Pixel {
             return true;
         }
         return false;
+    }
+
+
+    int distance(const Pixel other){
+        return std::abs((int)_r - (int)other._r) + std::abs((int)_g - (int)other._g) + std::abs((int)_b - (int)other._b);
     }
 };
 
@@ -178,7 +183,7 @@ struct Image {
         }
     }
 
-    std::pair<std::vector<int>, std::vector<int>> get_coordinates(Pixel couleur = Pixel(255,0,0)){ // renvoie les coordonnées de tous les points d'une certaine couleur
+    std::pair<std::vector<int>, std::vector<int>> get_coordinates(Pixel couleur = Pixel(255,0,0), int seuil = 50){ // renvoie les coordonnées de tous les points d'une certaine couleur
         // renvoie un vecteur de toutes les ordonnées x et un de toutes les abscisses y dans une paire de vecteur
         std::vector<int> vecteurX;
         std::vector<int> vecteurY;
@@ -188,7 +193,7 @@ struct Image {
         for(auto ligne : pixels){
             j = 0;
             for(auto pixel : ligne){
-                if(pixel._r == couleur._r && pixel._g == couleur._g && pixel._b == couleur._b){
+                if(pixel.distance(couleur) <= seuil){ // après surcharge 
                     vecteurX.push_back(j); // on ajoute l'ordonnée du point au vecteur des ordonnées
                     vecteurY.push_back(i); // on ajoute l'abscice du point au vecteur des abscisses
                 }
@@ -201,10 +206,10 @@ struct Image {
     }
 };
 
-int main(){
-    Image img1("imageAvecDeuxSegments.ppm");
-    img1.surligner_droite("test1", 1.5, 0, Pixel(150,40,50));
-    Image img2(1000, 1000);
-    img2.surligner_droite("test2", 75, 1.5, Pixel(0,255,255));
-    return 0;
-}
+//int main(){
+//    Image img1("imageAvecDeuxSegments.ppm");
+//    img1.surligner_droite("test1", 1.5, 0, Pixel(150,40,50));
+//    Image img2(1000, 1000);
+//    img2.surligner_droite("test2", 75, 1.5, Pixel(0,255,255));
+//    return 0;
+//}
