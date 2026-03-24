@@ -54,3 +54,54 @@ MinInd trouve_min(const std::vector<double>& v) {
 
     return res;
 }
+
+// paramètres de la droite dans l'espace de Hough
+struct ParamHough {
+    double rho;
+    double theta;
+};
+
+
+
+double distance(const ParamHough& a, const ParamHough& b) {
+    return std::sqrt((a.rho - b.rho)*(a.rho - b.rho) + (a.theta - b.theta)*(a.theta - b.theta));
+}
+
+std::vector<ParamHough> Clustering(const std::vector<double> &X, const std::vector<double>& Y, double threshold) {
+    int n = X.size();
+    std::vector<ParamHough> points(n);
+    
+    for (int i = 0; i < n; i++) {
+        points[i] = {X[i], Y[i]};
+    }
+
+    std::vector<bool> visited(n, false);
+    std::vector<ParamHough> centers;
+
+    for (int i = 0; i < n; i++) {
+        if (visited[i]) continue;
+
+        std::vector<ParamHough> cluster;
+        cluster.push_back(points[i]);
+        visited[i] = true;
+
+        // regroupe les points proches
+        for (int j = 0; j < n; j++) {
+            if (!visited[j] && distance(points[i], points[j]) < threshold) {
+                cluster.push_back(points[j]);
+                visited[j] = true;
+            }
+        }
+
+        // calcule le centre
+        double sumX = 0, sumY = 0;
+        for (auto& p : cluster) {
+            sumX += p.rho;
+            sumY += p.theta;
+        }
+
+        centers.push_back({sumX / cluster.size(), sumY / cluster.size()});
+    }
+
+    return centers;
+}
