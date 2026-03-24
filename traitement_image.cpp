@@ -23,7 +23,7 @@ struct Pixel {
     }
 
 
-    int distance(const Pixel other){
+    int distance(const Pixel other) const {
         return std::abs((int)_r - (int)other._r) + std::abs((int)_g - (int)other._g) + std::abs((int)_b - (int)other._b);
     }
 };
