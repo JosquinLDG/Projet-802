@@ -195,7 +195,7 @@ struct Image {
             for(auto pixel : ligne){
                 if(pixel.distance(couleur) <= seuil){ // après surcharge 
                     vecteurX.push_back(j); // on ajoute l'ordonnée du point au vecteur des ordonnées
-                    vecteurY.push_back(i); // on ajoute l'abscice du point au vecteur des abscisses
+                    vecteurY.push_back(_height - 1 - i); // on ajoute l'abscice du point au vecteur des abscisses
                 }
                 j++;
             }
