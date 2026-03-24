@@ -9,5 +9,6 @@ Ce projet est contenu dans plusieurs fichiers séparés.
 - lire_ppm : une fonction pour lire les fichiers .ppm et les convertir en objet Image. Utilise la méthode lire_token pour traiter les .ppm .  
 - tracer_droite : crée et renvoie un objet Image avec une droite tracée selon des coordonnées polaires
 - surligner_droite : crée un nouveau fichier .ppm à partir d'un autre fichier déjà existant et change les valeurs des pixels concernées selon la fonction tracer_droite
-- afficher_données : fonction utile lors du développement pour visualiser un objet Image
-- 
+- afficher_données : fonction utile lors du développement pour visualiser un objet Image  
+
+♥ 
