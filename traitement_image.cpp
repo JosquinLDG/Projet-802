@@ -15,7 +15,7 @@ struct Pixel {
     Pixel(unsigned int r, unsigned int g, unsigned int b) : _r(r), _g(g), _b(b) {}
     
     
-    bool operator==(const Pixel other){ // Surcharge de l'opérateur de comparaison ==
+    bool operator==(const Pixel other){ // Surcharge de l'opérateur de comparaison == pour comparer 2 Pixels entre eux
         if(other._r == _r && other._g == _g && other._b == _b){
             return true;
         }
@@ -23,7 +23,7 @@ struct Pixel {
     }
 
 
-    int distance(const Pixel other) const {
+    int distance(const Pixel other) const { // Distance de Manhattan entre la couleur de 2 Pixels
         return std::abs((int)_r - (int)other._r) + std::abs((int)_g - (int)other._g) + std::abs((int)_b - (int)other._b);
     }
 };
@@ -57,6 +57,7 @@ struct Image {
         return "";
     }
 
+    // méthode pour lire des fichiers en format .ppm
     static Image lire_ppm(const std::string& nomFichier) {
         std::ifstream file(nomFichier);
         if (!file) { // S'il y a une erreur, on affiche qu'il y a eu une erreur et on génère une image vide
@@ -84,6 +85,8 @@ struct Image {
         return img;
     }
 
+    // méthode qui se sert de la méthode tracer_droite qui suit pour générer une nouvelle image, basée sur l'image d'origine de l'objet.
+    // permet de surligner les droites détectées par 
     void surligner_droite(std::string const nom_nouveau_fichier, const std::vector<double> &rhos, const std::vector<double> &thetas, Pixel couleur = Pixel(255,0,0)){
         std::ofstream fichier(nom_nouveau_fichier + ".ppm");
         Image img = *this;
@@ -93,11 +96,11 @@ struct Image {
         }
 
         std::cout << "Tracage de la droite" << std::endl;
-        Image droite_tracee = tracer_droite(rhos, thetas, couleur);
+        Image droite_tracee = tracer_droite(rhos, thetas, couleur); // on utilise la méthode tracer_droite pour générer une image avec des droites
 
         std::cout << "Conversion des pixel" << std::endl;
 
-        for(int i = 0; i < _height; i++){
+        for(int i = 0; i < _height; i++){ // on modifie les pixels de l'image là où la droite est dessinée par tracer_droite
             for(int j = 0; j < _width; j++){
                 Pixel pixel = droite_tracee.pixels[i][j];
                 if(pixel == couleur){
@@ -121,6 +124,7 @@ struct Image {
         }
     }
 
+    // méthode pour générer une image avec des droites
     Image tracer_droite(const std::vector<double> &rhos, const std::vector<double> &thetas, Pixel couleur = Pixel(255,0,0)){
         Image droite_tracee = Image(_height, _width); // initialisation de droite_tracee
 
@@ -202,7 +206,8 @@ struct Image {
         }
     }
 
-    std::pair<std::vector<int>, std::vector<int>> get_coordinates(Pixel couleur = Pixel(255,255,255), int seuil = 50){ // renvoie les coordonnées de tous les points d'une certaine couleur
+    // renvoie les coordonnées de tous les points d'une certaine couleur ou de couleur proche 
+    std::pair<std::vector<int>, std::vector<int>> get_coordinates(Pixel couleur = Pixel(255,255,255), int seuil = 50){ // seuil pour décréter qu'une couleur est assez proche ou non
         // renvoie un vecteur de toutes les ordonnées x et un de toutes les abscisses y dans une paire de vecteur
         std::vector<int> vecteurX;
         std::vector<int> vecteurY;
@@ -224,11 +229,3 @@ struct Image {
         return  coordonnees;
     }
 };
-
-//int main(){
-//    Image img1("imageAvecDeuxSegments.ppm");
-//    img1.surligner_droite("test1", 1.5, 0, Pixel(150,40,50));
-//    Image img2(1000, 1000);
-//    img2.surligner_droite("test2", 75, 1.5, Pixel(0,255,255));
-//    return 0;
-//}

@@ -1,5 +1,11 @@
 #include <vector>
 #include <algorithm>
+#include <iostream>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+#include <utility>
+#include <string>
 
 template <typename T>
 std::vector<T> linspace(T start, T stop, unsigned int N){
@@ -56,38 +62,57 @@ MinInd trouve_min(const std::vector<double>& v) {
 }
 
 // paramètres de la droite dans l'espace de Hough
-struct ParamHough {
+struct ParamPolaires {
     double rho;
     double theta;
+    ParamPolaires() : rho(), theta() {}
+    ParamPolaires(double p1, double p2) : rho(p1), theta(p2) {}
 };
 
 
 
-double distance(const ParamHough& a, const ParamHough& b) {
+double distance(const ParamPolaires& a, const ParamPolaires& b) {
     return std::sqrt((a.rho - b.rho)*(a.rho - b.rho) + (a.theta - b.theta)*(a.theta - b.theta));
 }
 
-std::vector<ParamHough> Clustering(const std::vector<double> &X, const std::vector<double>& Y, double threshold = 3.0) {
+
+// Fonction générée par IA car trop longue à faire soi même en C++
+std::vector<ParamPolaires> Clustering(const std::vector<double> &X,
+                                      const std::vector<double>& Y,
+                                      double threshold = 0.15) // seuil réduit
+{
     int n = X.size();
-    std::vector<ParamHough> points(n);
+    std::vector<ParamPolaires> points(n);
     
     for (int i = 0; i < n; i++) {
         points[i] = {X[i], Y[i]};
     }
 
+    //  normalisation
+    double max_rho = *std::max_element(X.begin(), X.end());
+    double min_rho = *std::min_element(X.begin(), X.end());
+    double rho_scale = std::max(std::abs(max_rho), std::abs(min_rho));
+    double theta_scale = M_PI;
+
+    auto distance_norm = [&](const ParamPolaires& a, const ParamPolaires& b) {
+        double dr = (a.rho - b.rho) / rho_scale;
+        double dt = (a.theta - b.theta) / theta_scale;
+        return std::sqrt(dr*dr + dt*dt);
+    };
+
     std::vector<bool> visited(n, false);
-    std::vector<ParamHough> centers;
+    std::vector<ParamPolaires> centers;
 
     for (int i = 0; i < n; i++) {
         if (visited[i]) continue;
 
-        std::vector<ParamHough> cluster;
+        std::vector<ParamPolaires> cluster;
         cluster.push_back(points[i]);
         visited[i] = true;
 
         // regroupe les points proches
         for (int j = 0; j < n; j++) {
-            if (!visited[j] && distance(points[i], points[j]) < threshold) {
+            if (!visited[j] && distance_norm(points[i], points[j]) < threshold) {
                 cluster.push_back(points[j]);
                 visited[j] = true;
             }
@@ -105,9 +130,11 @@ std::vector<ParamHough> Clustering(const std::vector<double> &X, const std::vect
 
     return centers;
 }
+// Fin de la fonction générée par IA
 
-ParamHough HoughDepuis2Point(int x1, int y1, int x2, int y2) {
-    ParamHough parametres;
+
+ParamPolaires HoughDepuis2Point(int x1, int y1, int x2, int y2) {
+    ParamPolaires parametres;
 
     double dx = x1 - x2;
     double dy = y1 - y2;
@@ -118,9 +145,9 @@ ParamHough HoughDepuis2Point(int x1, int y1, int x2, int y2) {
     return parametres;
 }
 
-ParamHough ransac(const std::vector<int>& X, // ensemble de points
+ParamPolaires ransac(const std::vector<int>& X, // ensemble de points
                    const std::vector<int>& Y,
-                   ParamHough parametre, // parametre polaire
+                   ParamPolaires parametre, // parametre polaire
                    int nb_essais = 50) // nb de tests au hasard
                    // trouve une droite qui passe par 2 points et qui minimise l'ecart des inliers à la droite
 {
@@ -142,10 +169,7 @@ ParamHough ransac(const std::vector<int>& X, // ensemble de points
     }
 
     if (inliers.size() < 2) {
-        ParamHough meilleur;
-        meilleur.rho = rho;
-        meilleur.theta = theta;
-        return meilleur;
+        return ParamPolaires(rho, theta);
     }
 
     std::vector<double> Xi, Yi;
@@ -172,7 +196,7 @@ ParamHough ransac(const std::vector<int>& X, // ensemble de points
         double x2 = Xi[i2];
         double y2 = Yi[i2];
 
-        ParamHough d = HoughDepuis2Point(x1, y1, x2, y2);
+        ParamPolaires d = HoughDepuis2Point(x1, y1, x2, y2);
 
         double rhoi = d.rho;
         double thetai = d.theta;
@@ -190,9 +214,5 @@ ParamHough ransac(const std::vector<int>& X, // ensemble de points
         }
     }
 
-    ParamHough meilleur;
-    meilleur.rho = meilleur_rho;
-    meilleur.theta = meilleur_theta;
-
-    return meilleur;
+    return ParamPolaires(meilleur_rho, meilleur_theta);
 }
