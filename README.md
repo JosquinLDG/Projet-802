@@ -19,4 +19,4 @@ traitement_image :
 
 Hough : définition de l'algorithme appelé dans le main pour déterminer les coefficients de droites à surligner  
 
-fonctions_auxiliaires : définitions de fonctions et de classes utiles au fonctionnement de Hough
+fonctions_auxiliaires : définitions de fonctions et de classes utiles au fonctionnement de Hough.cpp
