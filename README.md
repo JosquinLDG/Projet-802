@@ -2,16 +2,7 @@
 
 Ce projet est contenu dans plusieurs fichiers séparés.  
 
-♥ traitement_image.cpp :  
+Le programme à compiler est le programme main.cpp .  
+Celui-ci se base sur le programme Hough.cpp, et ces deux programmes s'appuient sur des structures et méthode définies dans traitement_image.cpp et dans fonctions_auxiliaires.cpp .  
 
-► structure Pixel  
-
-► structure Image :  
-- lire_token : méthode permettant de lire le premier token (~ mot) d'un texte en ignorant les lignes qui commencent par #. Le token renvoyé par la fonction est supprimé du texte lu. Appeler n fois la fonction avec le même texte permet de lire les n premiers token du texte (excepté les lignes en #).  
-- lire_ppm : une méthode pour lire les fichiers .ppm et les convertir en objet Image. Utilise la méthode lire_token pour traiter les .ppm .  
-- tracer_droite : crée et renvoie un objet Image avec une droite tracée selon des coordonnées polaires
-- surligner_droite : crée un nouveau fichier .ppm à partir d'un autre fichier déjà existant et change les valeurs des pixels concernées selon la fonction tracer_droite
-- afficher_données : méthode utile lors du développement pour visualiser un objet Image
-- get_coordinates : renvoie les coordonnées X et Y des points d'un objet Image d'une certaine couleur (par défaut rouge).  
-
-♥ 
+Une fonction Clustering est définie dans le fichier fonctions_auxiliaires.cpp ; elle a été générée par IA puisque cela aurait été un pan entier de travail en plus.
