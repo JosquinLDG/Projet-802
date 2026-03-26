@@ -216,3 +216,21 @@ ParamPolaires ransac(const std::vector<int>& X, // ensemble de points
 
     return ParamPolaires(meilleur_rho, meilleur_theta);
 }
+
+
+// get_rhos et get_thetas sont deux fonctions utiles pour simplifier l'implémentation de certains codes
+std::vector<double> get_rhos(std::vector<ParamPolaires> vecteur_polaire){
+    std::vector<double> vecteur_rhos;
+    for(int i = 0; i < vecteur_polaire.size(); i++){
+        vecteur_rhos.push_back(vecteur_polaire[i].rho);
+    }
+    return vecteur_rhos;
+}
+
+std::vector<double> get_thetas(std::vector<ParamPolaires> vecteur_polaire){
+    std::vector<double> vecteur_thetas;
+    for(int i = 0; i < vecteur_polaire.size(); i++){
+        vecteur_thetas.push_back(vecteur_polaire[i].theta);
+    }
+    return vecteur_thetas;
+}

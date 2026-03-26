@@ -21,6 +21,7 @@ std::vector<ParamPolaires> trouve_droites(const std::vector<int>& X,
                                        const std::vector<int>& Y,
                                        int nblignes = 1, double seuil_clustering=0.1)
 {
+    std::cout << "Calcul des parametres polaires des droites" << std::endl;
     std::vector<ParamPolaires> resultats;
 
     int n = X.size();

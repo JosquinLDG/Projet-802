@@ -6,6 +6,7 @@
 #include <utility>
 #include <cstdlib>
 
+
 // Structure Pixel, qui permet de stocker les valeurs r, g et b d'un pixel
 struct Pixel {
 
@@ -44,188 +45,177 @@ struct Image {
         : Image(lire_ppm(nomFichier)) {}
 
 
-    static std::string lire_token(std::ifstream& file) { // Une fonction qui permet de passer les lignes qui commencent par '#' et renvoie le premier "mot" suivant
-        std::string token; // On initialise un mot à vide
-        while (file >> token) { // Tant qu'il y a des choses à lire dans file
-            if (token[0] == '#') { // Si la ligne commence par '#', on saute la ligne
-                std::string ligne;
-                std::getline(file, ligne); // ignorer le reste de la ligne
-            } else {
-                return token; // On renvoit le token si la ligne n'est pas un commentaire
+    private:
+        
+        //
+        static std::string lire_token(std::ifstream& file) { // Une fonction qui permet de passer les lignes qui commencent par '#' et renvoie le premier "mot" suivant
+            std::string token; // On initialise un mot à vide
+            while (file >> token) { // Tant qu'il y a des choses à lire dans file
+                if (token[0] == '#') { // Si la ligne commence par '#', on saute la ligne
+                    std::string ligne;
+                    std::getline(file, ligne); // ignorer le reste de la ligne
+                } else {
+                    return token; // On renvoit le token si la ligne n'est pas un commentaire
+                }
             }
-        }
-        return "";
-    }
-
-    // méthode pour lire des fichiers en format .ppm
-    static Image lire_ppm(const std::string& nomFichier) {
-        std::ifstream file(nomFichier);
-        if (!file) { // S'il y a une erreur, on affiche qu'il y a eu une erreur et on génère une image vide
-            std::cerr << "Erreur ouverture fichier\n";
-            return Image(0, 0);
+            return "";
         }
 
-        // On récupère les informations importantes (sur les lignes sans '#') dans un ordre précis
-        std::string format = lire_token(file); // format de l'image
-        int width  = std::stoi(lire_token(file)); // Largeur de l'image
-        int height = std::stoi(lire_token(file)); // Hauteur de l'image
-        int maxVal = std::stoi(lire_token(file)); // Valeur maximale de l'image
-        // Ces informations ne seront pas forcément toutes utiles, mais il est plus simple de toutes les traiter ainsi
-
-        Image img(height, width); // On instancie une image noire de la bonne dimension
-
-        for (int i = 0; i < height; i++) { // On modifie un à un tous les pixels de cette image d'après la lecture du fichier
-            for (int j = 0; j < width; j++) {
-                img.pixels[i][j]._r = std::stoi(lire_token(file));
-                img.pixels[i][j]._g = std::stoi(lire_token(file));
-                img.pixels[i][j]._b = std::stoi(lire_token(file));
+        // méthode pour lire des fichiers en format .ppm
+        static Image lire_ppm(const std::string& nomFichier) {
+            std::ifstream file(nomFichier);
+            if (!file) { // S'il y a une erreur, on affiche qu'il y a eu une erreur et on génère une image vide
+                std::cerr << "Erreur ouverture fichier\n";
+                return Image(0, 0);
             }
+
+            // On récupère les informations importantes (sur les lignes sans '#') dans un ordre précis
+            std::string format = lire_token(file); // format de l'image
+            int width  = std::stoi(lire_token(file)); // Largeur de l'image
+            int height = std::stoi(lire_token(file)); // Hauteur de l'image
+            int maxVal = std::stoi(lire_token(file)); // Valeur maximale de l'image
+            // Ces informations ne seront pas forcément toutes utiles, mais il est plus simple de toutes les traiter ainsi
+
+            Image img(height, width); // On instancie une image noire de la bonne dimension
+
+            for (int i = 0; i < height; i++) { // On modifie un à un tous les pixels de cette image d'après la lecture du fichier
+                for (int j = 0; j < width; j++) {
+                    img.pixels[i][j]._r = std::stoi(lire_token(file));
+                    img.pixels[i][j]._g = std::stoi(lire_token(file));
+                    img.pixels[i][j]._b = std::stoi(lire_token(file));
+                }
+            }
+
+            return img;
         }
 
-        return img;
-    }
-
-    // méthode qui se sert de la méthode tracer_droite qui suit pour générer une nouvelle image, basée sur l'image d'origine de l'objet.
-    // permet de surligner les droites détectées par 
-    void surligner_droite(std::string const nom_nouveau_fichier, const std::vector<double> &rhos, const std::vector<double> &thetas, Pixel couleur = Pixel(255,0,0)){
-        std::ofstream fichier(nom_nouveau_fichier + ".ppm");
-        Image img = *this;
-
-        for(int compteur = 0; compteur < rhos.size(); compteur++){
-            std::cout << "rho " << compteur << " : " << rhos[compteur] << "  theta " << compteur << " : " << thetas[compteur] << std::endl;
+        // methode simple permettant de copier le contenu de l'objet
+        Image copy() const{
+            return *this;
         }
 
-        std::cout << "Tracage de la droite" << std::endl;
-        Image droite_tracee = tracer_droite(rhos, thetas, couleur); // on utilise la méthode tracer_droite pour générer une image avec des droites
-
-        std::cout << "Conversion des pixel" << std::endl;
-
-        for(int i = 0; i < _height; i++){ // on modifie les pixels de l'image là où la droite est dessinée par tracer_droite
-            for(int j = 0; j < _width; j++){
-                Pixel pixel = droite_tracee.pixels[i][j];
-                if(pixel == couleur){
-                    img.pixels[i][j]._r = couleur._r;
-                    img.pixels[i][j]._g = couleur._g;
-                    img.pixels[i][j]._b = couleur._b;
+        // methode permettant d'encoder une image dans un fichier en format .ppm
+        void ecrire_fichier_ppm(std::string nomFichier, Image img){
+            std::ofstream fichier(nomFichier + ".ppm");
+            std::cout << "Ecriture du document" << std::endl;
+            fichier << "P3\n";
+            fichier << img._width << " " << img._height << "\n";
+            fichier << 225 << "\n";
+            for(int i = 0; i < img._height; i++){
+                for(int j = 0; j < img._width; j++){
+                    fichier << img.pixels[i][j]._r << "\n";
+                    fichier << img.pixels[i][j]._g << "\n";
+                    fichier << img.pixels[i][j]._b << "\n";
                 }
             }
         }
 
-        std::cout << "Ecriture du document" << std::endl;
-        fichier << "P3\n";
-        fichier << img._width << " " << img._height << "\n";
-        fichier << 225 << "\n";
-        for(int i = 0; i < _height; i++){
-            for(int j = 0; j < _width; j++){
-                fichier << img.pixels[i][j]._r << "\n";
-                fichier << img.pixels[i][j]._g << "\n";
-                fichier << img.pixels[i][j]._b << "\n";
-            }
-        }
-    }
+    public : 
+        Image surligner_droite(std::string nomFichier, const std::vector<double> &rhos, const std::vector<double> &thetas, Pixel couleur = Pixel(255,0,0)){
+            Image droite_tracee = copy();
 
-    // méthode pour générer une image avec des droites
-    Image tracer_droite(const std::vector<double> &rhos, const std::vector<double> &thetas, Pixel couleur = Pixel(255,0,0)){
-        Image droite_tracee = Image(_height, _width); // initialisation de droite_tracee
+            int diag = (int) std::sqrt(_width*_width + _height*_height); //longueur de la diagonale
 
-        int diag = (int) std::sqrt(_width*_width + _height*_height); //longueur de la diagonale
-        double pi = 2 * std::acos(0.0);
+            int i;
+            int j;
 
-        int i;
-        int j;
+            double a;
+            double b;
 
-        double a;
-        double b;
+            double theta;
+            double rho;
 
-        double theta;
-        double rho;
+            std::cout << "Tracage des droites" << std::endl;
+            for (int k = 0; k < rhos.size(); k++){
+                theta = thetas[k];
+                rho = rhos[k];
 
-        for (int k = 0; k < rhos.size(); k++){
-            
-            theta = thetas[k];
-            rho = rhos[k];
+                std::cout << k + 1 << "eme droites : theta = " << theta << "  et rho = " << rho << std::endl; // Ligne pour l'affichage des parametres polaires
 
-            if (std::abs(std::cos(theta)) > std::abs(std::sin(theta))){//(theta > - pi/4 && theta < pi/4){
-                a =  - std::sin(theta) / std::cos(theta);
-                b = rho / std::cos(theta);
 
-                for(int i = 0; i < _height; i++){
+                //On separe en deux cas; on trace la droite en fonction de i ou de j relativement au degré d'inclinaison de la courbe
+                if (std::abs(std::cos(theta)) > std::abs(std::sin(theta))){ // la droite est plus verticale qu'horizontale
+                    a =  - std::sin(theta) / std::cos(theta);
+                    b = rho / std::cos(theta);
 
-                    int j = (int) (a*i + b + 0.5); // le "+0.5" permet d'arrondir convenablement, pas simplement au nombre inferieur
-                    int l = 0;
+                    for(int i = 0; i < _height; i++){
 
-                    do {
-                        if (j + l >= 0 && j + l < _width){ //verification que la colonne du pixel appartient à l'image 
-                            droite_tracee.pixels[_height - 1 - i][j+l] = couleur;
+                        int j = (int) (a*i + b + 0.5); // le "+0.5" permet d'arrondir convenablement, pas simplement au nombre inferieur
+                        int l = 0;
+
+                        do {
+                            if (j + l >= 0 && j + l < _width){ //verification que la colonne du pixel appartient à l'image 
+                                droite_tracee.pixels[_height - 1 - i][j+l] = couleur;
+                            }
+                            if (j - l >= 0 && j - l < _width){ //verification que la colonne du pixel appartient à l'image 
+                            droite_tracee.pixels[_height - 1 - i][j-l] = couleur;
+                            }
+                            l++;
                         }
-                        if (j - l >= 0 && j - l < _width){ //verification que la colonne du pixel appartient à l'image 
-                        droite_tracee.pixels[_height - 1 - i][j-l] = couleur;
-                        }
-                        l++;
+                        while(l < diag / 200); // on définit une valeur arbitraire d'épaisseur de ligne basee sur la diagonale
                     }
-                    while(l < diag / 200); // on définit une valeur arbitraire d'épaisseur de ligne basee sur la diagonale
+
                 }
 
+                else{ // la droite est plus horizontale que verticale
+                    a =  - std::cos(theta) / std::sin(theta);
+                    b = rho / std::sin(theta);
+
+                    for(int j = 0; j < _width; j++){
+                        int i = (int) (a*j + b + 0.5);
+                        int l = 0;
+
+
+                        do  {
+                            int y1 = _height - 1 - i + l; // le point au dessus de la diagonale auquel on s'intéresse
+                            int y2 = _height - 1 - i - l; // le point en dessous de la diagoale auquel on s'intéresse
+
+                            if(y1 >= 0 && y1 < _height){
+                                droite_tracee.pixels[y1][j] = couleur;
+                            }
+                            if(y2 >= 0 && y2 < _height){
+                                droite_tracee.pixels[y2][j] = couleur;
+                            }
+                            l++;
+                            }
+                        while(l < diag / 200);
+                    }
+                }
             }
-
-            else{
-                a =  - std::cos(theta) / std::sin(theta);
-                b = rho / std::sin(theta);
-
-                for(int j = 0; j < _width; j++){
-                    int i = (int) (a*j + b + 0.5);
-                    int l = 0;
+            ecrire_fichier_ppm(nomFichier, droite_tracee); // un fichier .ppm est ecrit dans le même dossier que le code
+            return droite_tracee; // la fonction retourne aussi un nouvel objet Image avec la droite tracee
+        }
 
 
-                    do  {
-                        int y1 = _height - 1 - i + l; // le point au dessus de la diagonale auquel on s'intéresse
-                        int y2 = _height - 1 - i - l; // le point en dessous de la diagoale auquel on s'intéresse
-
-                        if(y1 >= 0 && y1 < _height){
-                            droite_tracee.pixels[y1][j] = couleur;
-                        }
-                        if(y2 >= 0 && y2 < _height){
-                            droite_tracee.pixels[y2][j] = couleur;
-                        }
-                        l++;
-                        }
-                    while(l < diag / 200);
+        void afficher_donnees(){ // Permet d'afficher le contenu d'une image. Chaque pixel est représenté sous forme (r,g,b). Fonction de debuggage.
+                for (auto ligne : pixels){
+                for (auto pixel : ligne) {
+                    std::cout << pixel._r << " " << pixel._g << " " << pixel._b << "   ";
                 }
+                std::cout << std::endl;
             }
         }
 
-        return droite_tracee;
-    }
+        // renvoie les coordonnées de tous les points d'une certaine couleur ou de couleur proche 
+        std::pair<std::vector<int>, std::vector<int>> get_coordinates(Pixel couleur = Pixel(255,255,255), int seuil = 50){ // seuil pour décréter qu'une couleur est assez proche ou non
+            // renvoie un vecteur de toutes les ordonnées x et un de toutes les abscisses y dans une paire de vecteur
+            std::vector<int> vecteurX;
+            std::vector<int> vecteurY;
 
-    void afficher_donnees(){ // Permet d'afficher le contenu d'une image. Chaque pixel est représenté sous forme (r,g,b)
-            for (auto ligne : pixels){
-            for (auto pixel : ligne) {
-                std::cout << pixel._r << " " << pixel._g << " " << pixel._b << "   ";
-            }
-            std::cout << std::endl;
-        }
-    }
-
-    // renvoie les coordonnées de tous les points d'une certaine couleur ou de couleur proche 
-    std::pair<std::vector<int>, std::vector<int>> get_coordinates(Pixel couleur = Pixel(255,255,255), int seuil = 50){ // seuil pour décréter qu'une couleur est assez proche ou non
-        // renvoie un vecteur de toutes les ordonnées x et un de toutes les abscisses y dans une paire de vecteur
-        std::vector<int> vecteurX;
-        std::vector<int> vecteurY;
-
-        int i = 0;
-        int j;
-        for(auto ligne : pixels){
-            j = 0;
-            for(auto pixel : ligne){
-                if(pixel.distance(couleur) <= seuil){ // après surcharge 
-                    vecteurX.push_back(j); // on ajoute l'ordonnée du point au vecteur des ordonnées
-                    vecteurY.push_back(_height - 1 - i); // on ajoute l'abscice du point au vecteur des abscisses
+            int i = 0;
+            int j;
+            for(auto ligne : pixels){
+                j = 0;
+                for(auto pixel : ligne){
+                    if(pixel.distance(couleur) <= seuil){ // après surcharge 
+                        vecteurX.push_back(j); // on ajoute l'ordonnée du point au vecteur des ordonnées
+                        vecteurY.push_back(_height - 1 - i); // on ajoute l'abscice du point au vecteur des abscisses
+                    }
+                    j++;
                 }
-                j++;
+                i++;
             }
-            i++;
+            std::pair<std::vector<int>, std::vector<int>> coordonnees = {vecteurX, vecteurY};
+            return  coordonnees;
         }
-        std::pair<std::vector<int>, std::vector<int>> coordonnees = {vecteurX, vecteurY};
-        return  coordonnees;
-    }
 };
