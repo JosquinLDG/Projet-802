@@ -10,7 +10,7 @@ Une fonction Clustering est définie dans le fichier fonctions_auxiliaires.cpp ;
 
 A l'exécution, ce projet permet de détecter des droites sur une image en format .ppm et de les surligner. Le résultat se lit dans un nouveau fichier .ppm créé automatiquement. Le nom de ce fichier dépend des instructions données dans la fonction main. 
 
-En Bref:
+En Bref:  
 main : pour faire tourner le programme global  
 
 traitement_image : 
@@ -19,4 +19,7 @@ traitement_image :
 
 Hough : définition de l'algorithme appelé dans le main pour déterminer les coefficients de droites à surligner  
 
-fonctions_auxiliaires : définitions de fonctions et de classes utiles au fonctionnement de Hough.cpp
+fonctions_auxiliaires : définitions de fonctions et de classes utiles au fonctionnement de Hough.cpp  
+
+
+Cette page GitHub contient aussi des images en .ppm qu'il est recommendé de télécharger si on veut pouvoir faire tourner le programme main sur différents exemples sans avoir à le modifier.
