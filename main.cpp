@@ -1,5 +1,7 @@
 #include "Hough.cpp"
 
+// Le programme tout entier ne nécessite que de faire tourner celui-ci
+
 
 int main(){
     Image img = Image("imageAvecDeuxSegments.ppm");

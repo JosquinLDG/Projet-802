@@ -6,6 +6,11 @@
 #include <utility>
 #include <cstdlib>
 
+// Dans ce fichier se trouve tout ce qui est relatif à la lecture de documents en format .ppm, à l'écriture de nouveaux documents dans ce format, etc.
+
+
+
+
 
 // Structure Pixel, qui permet de stocker les valeurs r, g et b d'un pixel
 struct Pixel {
